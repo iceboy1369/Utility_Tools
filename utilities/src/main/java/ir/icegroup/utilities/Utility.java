@@ -33,7 +33,7 @@ public class Utility {
      * sample  : dsdsd        result ----> false
      * sample2 : ddd@ggg.ccc  result ----> true
      */
-    static boolean isValidEmail(String email) {
+    public static boolean isValidEmail(String email) {
         if (email.length() == 0)
             return true;
         Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
@@ -58,7 +58,7 @@ public class Utility {
      * @param text your text
      * @return get back with persian numbers
      */
-    static String toPersianNumber(String text) {
+    public static String toPersianNumber(String text) {
         String out = "";
         if (text.length() == 0) {
             return out;
@@ -88,7 +88,7 @@ public class Utility {
      * @param duration duration to expand
      * @param targetHeight max height you need to expand to
      */
-    static void expand(final View v, int duration, int targetHeight) {
+    public static void expand(final View v, int duration, int targetHeight) {
 
         int prevHeight = v.getHeight();
 
@@ -115,7 +115,7 @@ public class Utility {
      * @param duration duration to collapse
      * @param targetHeight height of view to collapse to that value
      */
-    static void collapse(final View view, int duration, int targetHeight) {
+    public static void collapse(final View view, int duration, int targetHeight) {
         int prevHeight = view.getHeight();
         ValueAnimator valueAnimator = ValueAnimator.ofInt(prevHeight, targetHeight);
         valueAnimator.setInterpolator(new DecelerateInterpolator());
@@ -149,7 +149,7 @@ public class Utility {
      * @param string your text
      * @return if your text was english words return true else return false
      */
-    static boolean isEnglishWord(String string) {
+    public static boolean isEnglishWord(String string) {
         for (int i = 0; i < Character.codePointCount(string, 0, string.length()); i++) {
             int c = string.codePointAt(i);
             if (c >= 0x0600 && c <= 0x06FF || c == 0xFB8A || c == 0x067E || c == 0x0686 || c == 0x06AF)
@@ -173,7 +173,7 @@ public class Utility {
      *                  like 'Arial.ttf'
      * @return finally get back your html text to set in your webView
      */
-    static String getStyledFontForJustify(String your_text,String str_color, int font_size, String font_name) {
+    public static String getStyledFontForJustify(String your_text,String str_color, int font_size, String font_name) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             String text;
             String str_message = your_text.trim();
@@ -226,7 +226,7 @@ public class Utility {
      * @param activity need to your activity to get context
      * @return if Google Service was install in your device return true else false
      */
-    boolean isGooglePlayServicesAvailable(Activity activity) {
+    public static boolean isGooglePlayServicesAvailable(Activity activity) {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int status = googleApiAvailability.isGooglePlayServicesAvailable(activity);
         if(status != ConnectionResult.SUCCESS) {
@@ -244,7 +244,7 @@ public class Utility {
      * @param view your view
      * @return return array with to digit. first digit is height and second digit width
      */
-    static int[] getViewHeightWidth(View view) {
+    public static int[] getViewHeightWidth(View view) {
         WindowManager wm = (WindowManager) view.getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         int deviceWidth;
@@ -270,7 +270,7 @@ public class Utility {
      *
      * @param context set your app context
      */
-    void RestartApp(Context context) {
+    public static void RestartApp(Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -287,7 +287,7 @@ public class Utility {
      * @param money input your money value like '2000000'
      * @return return to you '2,000,000'
      */
-    String ShowMoney(String money) {
+    public static String ShowMoney(String money) {
         return String.format("%,d", Long.parseLong(money));
     }
 
@@ -302,7 +302,7 @@ public class Utility {
      * @param context set application context
      * @return if network is access return true else false
      */
-    Boolean isNetworkConnected(Context context) {
+    public static Boolean isNetworkConnected(Context context) {
         ConnectivityManager cm1 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         try {
             NetworkInfo ni1 = cm1.getActiveNetworkInfo();
@@ -324,7 +324,7 @@ public class Utility {
      * @param dp set your dp as digit
      * @return get back in px
      */
-    int convertDpToPx(int dp) {
+    public static int convertDpToPx(int dp) {
         return Math.round(dp * (Resources.getSystem().getDisplayMetrics().xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
@@ -339,7 +339,7 @@ public class Utility {
      * @param px set your px as digit
      * @return get back in dp
      */
-    int convertPxToDp(int px) {
+    public static int convertPxToDp(int px) {
         return Math.round(px / (Resources.getSystem().getDisplayMetrics().xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
@@ -353,7 +353,7 @@ public class Utility {
      * @param context set your application context
      * @return get back int array with 2 digit. the first digit is height and second is width of your screen
      */
-    int[] get_Device_height_width(Context context) {
+    public static int[] get_Device_height_width(Context context) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(displayMetrics);
@@ -374,7 +374,7 @@ public class Utility {
      * @param seconds set your second
      * @return get back time to you as '2:10:10' or '10:10'
      */
-    String convertSecondsToHMmSs(long seconds) {
+    public static String convertSecondsToHMmSs(long seconds) {
         long s = seconds % 60;
         long m = (seconds / 60) % 60;
         long h = (seconds / (60 * 60)) % 24;
@@ -395,7 +395,7 @@ public class Utility {
      * @param state set true to show statusBar or to hide set false
      * @param activity set current activity here
      */
-    void hide_Show_StatusBar(Boolean state, Activity activity) {
+    public static void hide_Show_StatusBar(Boolean state, Activity activity) {
         if (state) {
             // Hide the status bar.
             View decorView = activity.getWindow().getDecorView();
@@ -420,7 +420,7 @@ public class Utility {
      * @param value your string of digit
      * @return return to digit
      */
-    public int convert_To_Integer(String value) {
+    public static int convert_To_Integer(String value) {
         try {
             if (value.contains("null") || value.contains("Null") || value.contains("NULL") || value.trim().length() == 0)
                 return 0;
@@ -441,7 +441,7 @@ public class Utility {
      * @param inArray get Bytes Array
      * @return get back Hex String
      */
-    String ByteArrayToHexString(byte [] inArray) {
+    public static String ByteArrayToHexString(byte [] inArray) {
         int i, j, in;
         String [] hex = {"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"};
         String out= "";
@@ -469,7 +469,7 @@ public class Utility {
      * @param bArray get ByteArray
      * @return bet back Decimal String
      */
-    String byteArrayToDecimal(byte[] bArray) {
+    public static String byteArrayToDecimal(byte[] bArray) {
         if (bArray == null) return "";
         long result = 0;
         for (int i = bArray.length - 1; i >= 0; --i) {
@@ -490,7 +490,7 @@ public class Utility {
      * @param time give to me time like '11:59'
      * @return i`ll be return to you '11:59 AM'
      */
-    static String TimeWithPostfix(String time, String language) {
+    public static String TimeWithPostfix(String time, String language) {
         String postfix;
         String[] times = time.split(":");
         if (Integer.parseInt(times[0]) < 12) {
@@ -517,7 +517,7 @@ public class Utility {
      *
      * @param activity set current activity
      */
-    static void closeKeyboard(Activity activity){
+    public static void closeKeyboard(Activity activity){
         View view = activity.getCurrentFocus();
         if (view != null) {
             try {
@@ -541,7 +541,7 @@ public class Utility {
      * @param splitter  your spliter like '/' or '-'
      * @return '1397/08/05'
      */
-    static String gregorian_to_jalali(String date, String splitter){
+    public static String gregorian_to_jalali(String date, String splitter){
         int gy, gm, gd;
 
         String[] splitted_date = date.split(splitter);
@@ -596,7 +596,7 @@ public class Utility {
      * @param splitter is an character like '/' or '-' or anythings like than
      * @return '2018/10/27'
      */
-    static String jalali_to_gregorian(String date, String splitter){
+    public static String jalali_to_gregorian(String date, String splitter){
         int gy, jy, jm, jd;
         String[] splitted_date = date.split(splitter);
 
