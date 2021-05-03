@@ -5,12 +5,21 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Bundle;
+import android.provider.Settings;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,7 +27,23 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
+import java.util.zip.CRC32;
 
 public class Utility {
 
@@ -644,5 +669,119 @@ public class Utility {
         return gy + "/" + str_month + "/" + str_day;
     }
 
+    /** show TurnOnGPS dialog */
+    public static void turnGPSOn(final Activity activity, final int REQUEST_LOCATION) {
+        GoogleApiClient googleApiClient =null;
+        final GoogleApiClient finalGoogleApiClient = googleApiClient;
+        googleApiClient = new GoogleApiClient.Builder(activity)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {}
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+                        finalGoogleApiClient.connect();
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                        Log.d("Location error","Location error " + connectionResult.getErrorCode());
+
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        activity.startActivity(intent);
+                    }
+                }).build();
+        googleApiClient.connect();
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(30 * 1000);
+        locationRequest.setFastestInterval(5 * 1000);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        builder.setAlwaysShow(true);
+
+        @SuppressWarnings("deprecation")
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                if (status.getStatusCode() == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        status.startResolutionForResult(activity, REQUEST_LOCATION);
+                    } catch (IntentSender.SendIntentException e) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        activity.startActivity(intent);
+                    }
+                }else {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    activity.startActivity(intent);
+                }
+            }
+        });
+    }
+
+    /** get base64 string and calculate CRC32 checksum and return */
+    public static String getChecksumBase64(String base64) {
+        try {
+            CRC32 crc = new CRC32();
+            crc.update(base64.getBytes());
+            return String.format("%08X", crc.getValue());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "-1";
+    }
+
+    /** converting bitmap image to base64 string */
+    public static String encodeToBase64(Bitmap image){
+        String encode = "";
+        try {
+            ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOS);
+            encode = Base64.encodeToString(byteArrayOS.toByteArray(), Base64.NO_WRAP);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return encode;
+    }
+
+    /** get base64 string and convert to bitmap type */
+    public static Bitmap decodeFromBase64(String base64) {
+        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+    }
+
+    /** @author get bytes as long and convert to MegaByte
+     * @sample  -> `2MB`*/
+    public static String getBytesToMBString(Long bytes) {
+        return String.format(Locale.ENGLISH, "%.2fMb", bytes / (1024.00 * 1024.00));
+    }
+
+    /** add text in log */
+    public static void log(String msg, String APP_NAME) {
+        Log.e(APP_NAME, msg);
+    }
+
+    /** return list of storage's on device */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public static String[] getStorageDirectories(Context context) {
+        List<String> results = new ArrayList<>();
+        File[] externalDirs = context.getExternalFilesDirs(null);
+        for (File file : externalDirs) {
+            if (file.getPath().contains("/Android")){
+                String path = file.getPath().split("/Android")[0];
+                results.add(path);
+            }
+        }
+        return results.toArray(new String[0]);
+    }
 
 }

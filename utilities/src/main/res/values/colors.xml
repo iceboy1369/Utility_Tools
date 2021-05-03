@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <color name="colorAccent">#049E8E</color>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+
+    <color name="CancelColor">#c7ff0011</color>
+    <color name="Red">#ea1b1b</color>
+    <color name="Red2">#F84A4A</color>
+    <color name="RateBarColor">#e9d41a</color>
+    <color name="Yellow">#ACAA2E</color>
+    <color name="Green">#0d590d</color>
+    <color name="GreenTransparent">#25049E8E</color>
+    <color name="Green2">#148F14</color>
+    <color name="Blue">#0212A2</color>
+
+    <color name="orange">#ffbd0a</color>
+    <color name="green">#26ff00</color>
+    <color name="green_light">#4caf50</color>
+    <color name="colorGreen">#109589</color>
+    <color name="green_pure_light">#3A991E</color>
+    <color name="green_pure_dark">#357221</color>
+    <color name="green_pure_disable">#677363</color>
+
+    <color name="red">#ff002f</color>
+    <color name="red_light">#ec407a</color>
+    <color name="yellow">#ffe600</color>
+    <color name="yellow_light">#e9dc6b</color>
+    <color name="brown">#7c4a2f</color>
+    <color name="brown_light">#c6ae6c49</color>
+    <color name="blue">#19B5FE</color>
+    <color name="blue1">#0174AA</color>
+    <color name="blue2">#005177</color>
+    <color name="blue_light">#64b5f6</color>
+    <color name="purple">#FFAA66CC</color>
+    <color name="gray">#eeeeee</color>
+    <color name="gray_dark">#ADADAD</color>
+
+    <color name="colorGray">#858585</color>
+    <color name="TransparentWhite1">#5effffff</color>
+    <color name="TransparentWhite2">#F3FFFFFF</color>
+    <color name="TransparentWhite3">#d2ffffff</color>
+    <color name="TransparentWhite4">#ffffff</color>
+    <color name="White">#fff</color>
+    <color name="Cream">#F8F8F5</color>
+    <color name="white_material">#F5F5F5</color>
+
+    <color name="TransparentBlack1">#07000000</color>
+    <color name="TransparentBlack2">#0d000000</color>
+    <color name="TransparentBlack3">#30000000</color>
+    <color name="TransparentBlack4">#53000000</color>
+    <color name="TransparentBlack">#85000000</color>
+    <color name="Black">#000</color>
+
+    <color name="Transparent">#00000000</color>
+
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
+
+</resources>
