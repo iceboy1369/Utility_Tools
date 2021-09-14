@@ -48,7 +48,7 @@ import java.util.zip.CRC32;
 public class Utility {
 
 
-    private static String[] persianNumbers = new String[]{"۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"};
+    private static final String[] persianNumbers = new String[]{"۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"};
     /**
      * this function get email that user entered and check that is correct or not return true/false
      *
@@ -119,12 +119,9 @@ public class Utility {
 
         v.setVisibility(View.VISIBLE);
         ValueAnimator valueAnimator = ValueAnimator.ofInt(prevHeight, targetHeight);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                v.getLayoutParams().height = (int) animation.getAnimatedValue();
-                v.requestLayout();
-            }
+        valueAnimator.addUpdateListener(animation -> {
+            v.getLayoutParams().height = (int) animation.getAnimatedValue();
+            v.requestLayout();
         });
         valueAnimator.setInterpolator(new DecelerateInterpolator());
         valueAnimator.setDuration(duration);
@@ -144,12 +141,9 @@ public class Utility {
         int prevHeight = view.getHeight();
         ValueAnimator valueAnimator = ValueAnimator.ofInt(prevHeight, targetHeight);
         valueAnimator.setInterpolator(new DecelerateInterpolator());
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                view.getLayoutParams().height = (int) animation.getAnimatedValue();
-                view.requestLayout();
-            }
+        valueAnimator.addUpdateListener(animation -> {
+            view.getLayoutParams().height = (int) animation.getAnimatedValue();
+            view.requestLayout();
         });
         valueAnimator.setInterpolator(new DecelerateInterpolator());
         valueAnimator.setDuration(duration);
@@ -254,10 +248,7 @@ public class Utility {
     public static boolean isGooglePlayServicesAvailable(Activity activity) {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int status = googleApiAvailability.isGooglePlayServicesAvailable(activity);
-        if(status != ConnectionResult.SUCCESS) {
-            return false;
-        }
-        return true;
+        return status == ConnectionResult.SUCCESS;
     }
 
 
@@ -331,10 +322,7 @@ public class Utility {
         ConnectivityManager cm1 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         try {
             NetworkInfo ni1 = cm1.getActiveNetworkInfo();
-            if (ni1 == null)
-                return false;
-            else
-                return true;
+            return ni1 != null;
         }catch (NullPointerException e){
             return false;
         }
@@ -670,6 +658,7 @@ public class Utility {
     }
 
     /** show TurnOnGPS dialog */
+    @SuppressWarnings("deprecation")
     public static void turnGPSOn(final Activity activity, final int REQUEST_LOCATION) {
         GoogleApiClient googleApiClient =null;
         final GoogleApiClient finalGoogleApiClient = googleApiClient;
@@ -681,17 +670,20 @@ public class Utility {
 
                     @Override
                     public void onConnectionSuspended(int i) {
-                        finalGoogleApiClient.connect();
+                        try {
+                            if (finalGoogleApiClient!=null) {
+                                finalGoogleApiClient.connect();
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 })
-                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                        Log.d("Location error","Location error " + connectionResult.getErrorCode());
+                .addOnConnectionFailedListener(connectionResult -> {
+                    Log.d("Location error","Location error " + connectionResult.getErrorCode());
 
-                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        activity.startActivity(intent);
-                    }
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    activity.startActivity(intent);
                 }).build();
         googleApiClient.connect();
 
@@ -707,23 +699,20 @@ public class Utility {
         @SuppressWarnings("deprecation")
         PendingResult<LocationSettingsResult> result =
                 LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(@NonNull LocationSettingsResult result) {
-                final Status status = result.getStatus();
-                if (status.getStatusCode() == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
-                    try {
-                        // Show the dialog by calling startResolutionForResult(),
-                        // and check the result in onActivityResult().
-                        status.startResolutionForResult(activity, REQUEST_LOCATION);
-                    } catch (IntentSender.SendIntentException e) {
-                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        activity.startActivity(intent);
-                    }
-                }else {
+        result.setResultCallback(result1 -> {
+            final Status status = result1.getStatus();
+            if (status.getStatusCode() == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    status.startResolutionForResult(activity, REQUEST_LOCATION);
+                } catch (IntentSender.SendIntentException e) {
                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     activity.startActivity(intent);
                 }
+            }else {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                activity.startActivity(intent);
             }
         });
     }
